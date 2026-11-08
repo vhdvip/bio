@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Giúp việc văn phòng</title>
+<meta name="description" content="Tự động hóa quy trình xử lý dữ liệu bằng Excel VBA &amp; Access. Mẹo Excel VBA & Access, tự động hóa báo cáo, nhận viết phần mềm quản lý theo yêu cầu. Zalo: 0979 992 697.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vhdvip.github.io/bio/">
+<meta property="og:title" content="Giúp việc văn phòng · Excel VBA &amp; Access">
+<meta property="og:description" content="Tự động hóa quy trình xử lý dữ liệu bằng Excel VBA &amp; Access. Mẹo Excel VBA & Access, tự động hóa báo cáo, nhận viết phần mềm quản lý theo yêu cầu. Zalo: 0979 992 697.">
+<meta property="og:image" content="https://vhdvip.github.io/bio/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0d7a5c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230d7a5c'/%3E%3Ctext x='32' y='42' font-size='28' font-weight='800' text-anchor='middle' fill='white' font-family='sans-serif'%3EGV%3C/text%3E%3C/svg%3E">
+<style>[hidden]{display:none!important} img{max-width:100%}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: một cột khổ điện thoại trên nền giấy kẻ ô như bảng tính. Mở đầu bằng thanh công thức,
+   các khối nội dung là "vùng ô" có viền chọn xanh, điểm nhấn vàng như ô được tô màu. */
+:root{
+  --bg:#f6f5f0;
+  --grid:#e3e1d8;
+  --surface:#ffffff;
+  --ink:#1d2528;
+  --ink-soft:#5b6568;
+  --line:#d4d2c8;
+  --accent:#0d7a5c;
+  --accent-ink:#ffffff;
+  --accent-soft:#dff0e8;
+  --mark:#fecf3b;
+  --mark-soft:#fff0bd;
+  --code-bg:#1f2a2d;
+  --code-ink:#e6efe9;
+  --code-kw:#7fd3b1;
+  --code-cm:#8fa0a3;
+  --code-str:#fecf3b;
+  --f-display:"Bricolage Grotesque","Be Vietnam Pro",system-ui,sans-serif;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141a1b;--grid:#1d2527;--surface:#1b2224;--ink:#e9eeec;--ink-soft:#9fabaa;--line:#2e3a3c;
+    --accent:#36b58c;--accent-ink:#0b1a15;--accent-soft:#16312a;--mark:#fecf3b;--mark-soft:#3d3416;
+    --code-bg:#0e1415;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141a1b;--grid:#1d2527;--surface:#1b2224;--ink:#e9eeec;--ink-soft:#9fabaa;--line:#2e3a3c;
+  --accent:#36b58c;--accent-ink:#0b1a15;--accent-soft:#16312a;--mark:#fecf3b;--mark-soft:#3d3416;
+  --code-bg:#0e1415;color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background-color:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:72px 26px;
+  padding-inline:16px;padding-block:20px 48px;
+}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3,p{margin:0}
+
+/* Thanh công thức */
+.fbar{display:grid;grid-template-columns:auto auto 1fr;align-items:stretch;background:var(--surface);border:1px solid var(--line);
+  font-family:var(--f-mono);font-size:13px;border-radius:4px;overflow:hidden}
+.fbar .namebox{padding:7px 12px;border-right:1px solid var(--line);color:var(--ink-soft);min-width:52px;text-align:center}
+.fbar .fx{padding:7px 10px;border-right:1px solid var(--line);color:var(--accent);font-style:italic;font-weight:600}
+.fbar .formula{padding:7px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fbar .formula b{color:var(--accent);font-weight:600}
+.caret{display:inline-block;width:1px;height:1em;background:var(--ink);vertical-align:-2px;margin-left:1px;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* Đầu trang */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding-top:6px}
+.avatar{display:block;width:136px;height:136px;max-width:100%;border-radius:50%;background:#fff;object-fit:cover;
+  box-shadow:0 0 0 4px var(--bg),0 0 0 6px var(--mark),0 14px 30px -12px rgba(13,122,92,.4)}
+h1{font:800 clamp(30px,8.4vw,40px)/1.08 var(--f-display);letter-spacing:-.02em;text-wrap:balance}
+.tagline{font-size:17px;color:var(--ink-soft);max-width:30ch;text-wrap:balance}
+.tagline mark{background:linear-gradient(transparent 55%,var(--mark-soft) 55%);color:var(--ink);padding-inline:2px}
+
+/* Liên kết */
+.links{display:flex;flex-direction:column;gap:10px}
+.link{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;padding:12px 14px;background:var(--surface);
+  border:1px solid var(--line);border-radius:4px;color:var(--ink);text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
+.link:hover{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);transform:translateY(-1px)}
+.link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.link .ic{width:44px;height:44px;display:grid;place-items:center;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.link .t{display:flex;flex-direction:column;min-width:0}
+.link .t b{font-weight:600;font-size:16px}
+.link .t span{font-size:13.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link .go{color:var(--ink-soft);font-family:var(--f-mono);font-size:14px}
+.link.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.link.primary .ic{background:rgba(255,255,255,.18);color:var(--accent-ink)}
+.link.primary .t span,.link.primary .go{color:var(--accent-ink);opacity:.85}
+
+/* Khối nội dung */
+.block{background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.block-head{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line);
+  font-family:var(--f-mono);font-size:12px;color:var(--ink-soft);background:var(--bg)}
+.block-head .ref{color:var(--accent);font-weight:600}
+.block-body{padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+h2{font:800 23px/1.2 var(--f-display);letter-spacing:-.01em;text-wrap:balance}
+.lead{color:var(--ink-soft)}
+
+/* Trước / sau */
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ba div{padding:12px;border-radius:4px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ba .before{background:var(--bg);border:1px dashed var(--line)}
+.ba .after{background:var(--accent-soft);border:1px solid var(--accent)}
+.ba small{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.ba .after small{color:var(--accent)}
+.ba p{font-size:14.5px;line-height:1.45}
+
+/* Bảng dịch vụ */
+.sheet{width:100%;border-collapse:collapse;font-size:14.5px}
+.sheet th,.sheet td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+.sheet th{font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:var(--ink-soft);background:var(--bg);text-align:center;padding:5px}
+.sheet td.n{width:36px;text-align:center;font-family:var(--f-mono);font-size:12px;color:var(--ink-soft);background:var(--bg)}
+.sheet td b{display:block;font-weight:600;margin-bottom:2px}
+.sheet td span{color:var(--ink-soft)}
+.sheet tr.hl td:not(.n){background:var(--mark-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chips span{font-size:12.5px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;color:var(--ink);background:var(--surface)}
+
+/* Mã VBA */
+.code{background:var(--code-bg);color:var(--code-ink);font:13px/1.7 var(--f-mono);padding:14px 16px;border-radius:4px;overflow-x:auto;margin:0;white-space:pre}
+.code .k{color:var(--code-kw)}.code .c{color:var(--code-cm);font-style:italic}.code .s{color:var(--code-str)}
+.run{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 15px/1 var(--f-body);padding:13px 18px;border-radius:4px;
+  border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(1.07)}
+.btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.status{font-family:var(--f-mono);font-size:13px;color:var(--ink-soft)}
+.bar{height:6px;flex:1 1 120px;background:var(--bg);border:1px solid var(--line);border-radius:999px;overflow:hidden;min-width:100px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width 1.6s cubic-bezier(.4,0,.2,1)}
+
+/* Liên hệ */
+.hire{border:2px solid var(--accent)}
+.hire .block-head{background:var(--accent);color:var(--accent-ink);border-bottom-color:var(--accent)}
+.hire .block-head .ref{color:var(--accent-ink)}
+.phone{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1px dashed var(--accent);
+  border-radius:4px;background:var(--accent-soft)}
+.phone .num{font:600 22px/1 var(--f-mono);letter-spacing:.02em;font-variant-numeric:tabular-nums;user-select:all}
+.phone small{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:6px;font-family:var(--f-body)}
+.copy{font:600 13px/1 var(--f-body);padding:9px 12px;border-radius:4px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);cursor:pointer}
+.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.copied{font-size:13px;color:var(--accent);min-height:1.2em}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+footer{text-align:center;font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:4px;padding-top:4px}
+footer .mono{font-family:var(--f-mono);font-size:12px}
+
+@media (prefers-reduced-motion:reduce){.caret{animation:none}.bar i{transition:none}.link{transition:none}}
+@media (max-width:380px){.ba{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="fbar" aria-hidden="true">
+    <span class="namebox">A1</span>
+    <span class="fx">fx</span>
+    <span class="formula">=<b>TuDongHoa</b>("quy trình")<span class="caret"></span></span>
+  </div>
+
+  <header class="hero">
+    <img class="avatar" src="logo.jpg" width="136" height="136" alt="Logo Giúp việc văn phòng">
+    <h1>Giúp việc văn phòng</h1>
+    <p class="tagline"><mark>Tự động hóa quy trình</mark> xử lý dữ liệu bằng Excel VBA &amp; Access</p>
+  </header>
+
+  <nav class="links" aria-label="Kênh của Giúp việc văn phòng">
+    <a class="link primary" id="lnk-tiktok" target="_blank" rel="noopener"
+       href="https://www.tiktok.com/@duongvba">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.6 2.4 4.5 5 5"/></svg></span>
+      <span class="t"><b>TikTok · @duongvba</b><span>Video mẹo VBA &amp; Excel mỗi tuần</span></span>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+    <a class="link" id="lnk-youtube" target="_blank" rel="noopener"
+       href="https://www.youtube.com/@duonggiupviecvanphong">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor"/></svg></span>
+      <span class="t"><b>YouTube</b><span>Hướng dẫn chi tiết, video dài</span></span>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+    <a class="link" id="lnk-facebook" target="_blank" rel="noopener"
+       href="https://www.facebook.com/vhdvip/">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14.5 21v-8h2.7l.4-3.2h-3.1V7.9c0-.9.3-1.6 1.6-1.6h1.7V3.5c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.2H8.5V13h2.7v8"/></svg></span>
+      <span class="t"><b>Facebook</b><span>Kết bạn &amp; nhắn tin trực tiếp</span></span>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+    <a class="link" target="_blank" rel="noopener" href="https://zalo.me/0979992697">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h16a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 17.5h-9l-4.5 3.5v-3.5H4A1.5 1.5 0 0 1 2.5 16V7A1.5 1.5 0 0 1 4 5.5z"/><path d="M7.5 10h9M7.5 13h5.5"/></svg></span>
+      <span class="t"><b>Zalo: 0979 992 697</b><span>Tư vấn &amp; nhận viết phần mềm</span></span>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+  </nav>
+
+  <section class="block" aria-labelledby="pain">
+    <div class="block-head"><span class="ref">B2</span><span>Vấn đề quen thuộc</span></div>
+    <div class="block-body">
+      <h2 id="pain">Mất cả buổi chiều để lọc, đếm, tổng hợp số liệu?</h2>
+      <p class="lead">Báo cáo cuối tháng phải copy–paste từ hàng chục file? Kênh này dành cho bạn.</p>
+      <div class="ba">
+        <div class="before"><small>Cách cũ</small><p>Mở từng file, copy–paste, kiểm tra lại bằng tay</p></div>
+        <div class="after"><small>Với VBA</small><p>Bấm một nút, báo cáo tự tổng hợp xong</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="svc">
+    <div class="block-head"><span class="ref">C3:C6</span><span>Mỗi video giải quyết một việc thật</span></div>
+    <div class="block-body">
+      <h2 id="svc">Những gì Excel VBA &amp; Access làm thay bạn</h2>
+      <div style="overflow-x:auto">
+        <table class="sheet">
+          <thead><tr><th></th><th>C</th></tr></thead>
+          <tbody>
+            <tr><td class="n">3</td><td><b>Tự động hóa báo cáo</b><span>Tổng hợp dữ liệu từ nhiều file, nhiều sheet chỉ với một nút bấm</span></td></tr>
+            <tr class="hl"><td class="n">4</td><td><b>Đếm, tính tổng, lọc theo màu</b><span>Theo màu ô, theo điều kiện, những việc công thức thường không làm được</span></td></tr>
+            <tr><td class="n">5</td><td><b>Phần mềm quản lý nhỏ gọn</b><span>Chạy ngay trên Excel/Access, không cần cài đặt thêm</span>
+              <div class="chips"><span>Kho</span><span>Nhân sự</span><span>Bán hàng</span><span>Công nợ</span></div></td></tr>
+            <tr><td class="n">6</td><td><b>Mẹo Excel thực tế</b><span>Áp dụng được ngay vào công việc hằng ngày</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="lead">Không cần biết lập trình: xem video là hiểu việc gì được giải quyết, tiết kiệm bao nhiêu thời gian.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="demo">
+    <div class="block-head"><span class="ref">Module1</span><span>Một nút bấm trông như thế này</span></div>
+    <div class="block-body">
+      <h2 id="demo">Báo cáo cuối tháng, gói gọn trong vài dòng</h2>
+<pre class="code"><span class="k">Sub</span> BaoCaoCuoiThang()
+    <span class="c">' Gộp mọi file trong thư mục, tổng hợp, xuất báo cáo</span>
+    TongHopThuMuc <span class="s">"D:\BaoCao\Thang11"</span>
+    LocTheoMau MauNen:=vbYellow
+    XuatBaoCao <span class="s">"TongHop_T11.xlsx"</span>
+<span class="k">End Sub</span></pre>
+      <div class="run">
+        <button class="btn" type="button" id="run-btn">▶ Chạy macro</button>
+        <div class="bar" aria-hidden="true"><i id="run-bar"></i></div>
+      </div>
+      <p class="status" id="run-status" role="status" aria-live="polite">Ví dụ minh họa. Bấm thử để xem.</p>
+    </div>
+  </section>
+
+  <section class="block hire" aria-labelledby="hire">
+    <div class="block-head"><span class="ref">D7</span><span>Dịch vụ</span></div>
+    <div class="block-body">
+      <h2 id="hire">Nhận viết phần mềm VBA/Access theo yêu cầu</h2>
+      <p class="lead">Cho cá nhân và doanh nghiệp: xây dựng quy trình tự động xử lý dữ liệu, báo cáo, quản lý kho, nhân sự, bán hàng, công nợ… đúng với cách bạn đang làm việc.</p>
+      <div class="phone">
+        <div><small>Zalo / Điện thoại</small><span class="num" id="phone">0979 992 697</span></div>
+        <button class="copy" type="button" id="copy-btn">Sao chép số</button>
+      </div>
+      <p class="copied" id="copied" role="status" aria-live="polite"></p>
+      <div class="actions">
+        <a class="btn" href="https://zalo.me/0979992697" target="_blank" rel="noopener">Nhắn Zalo ngay</a>
+        <a class="btn ghost" id="lnk-tiktok-2" href="https://www.tiktok.com/@duongvba" target="_blank" rel="noopener">Xem video mẫu</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Giúp việc văn phòng</span>
+    <span class="mono">Excel VBA · Access · Tự động hóa văn phòng</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  /* Nút chạy macro minh họa */
+  var btn = document.getElementById("run-btn"), bar = document.getElementById("run-bar"), st = document.getElementById("run-status");
+  var steps = ["Đang mở các file trong thư mục…", "Đang tổng hợp dữ liệu…", "Đang lọc các ô tô vàng…", "Xong! Báo cáo đã sẵn sàng."];
+  var busy = false;
+  btn.addEventListener("click", function(){
+    if (busy) return; busy = true; btn.disabled = true;
+    bar.style.transition = "none"; bar.style.width = "0"; void bar.offsetWidth; bar.style.transition = "";
+    var i = 0;
+    (function next(){
+      st.textContent = steps[i];
+      bar.style.width = Math.round((i + 1) / steps.length * 100) + "%";
+      if (++i < steps.length) setTimeout(next, 550);
+      else { busy = false; btn.disabled = false; btn.textContent = "▶ Chạy lại"; }
+    })();
+  });
+
+  /* Sao chép số Zalo */
+  var copyBtn = document.getElementById("copy-btn"), out = document.getElementById("copied");
+  copyBtn.addEventListener("click", function(){
+    function fallback(){
+      var el = document.getElementById("phone"), r = document.createRange();
+      r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      out.textContent = "Đã bôi đen số, nhấn giữ để sao chép.";
+    }
+    try {
+      navigator.clipboard.writeText("0979992697").then(function(){ out.textContent = "Đã sao chép 0979992697"; }, fallback);
+    } catch (e) { fallback(); }
+  });
+})();
+</script>
+</body>
+</html>
